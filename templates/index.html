@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>DQX耐性装備シミュレーター</title>
+  <meta name="description" content="ドラゴンクエストXの状態異常耐性装備をシミュレーション！最適な組み合わせを簡単に見つけ、URLでシェア可能。">
+  <meta name="keywords" content="ドラクエ10, DQX, 状態異常耐性, 11耐性, 12耐性, 13耐性, ブレス100, 呪文60">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta property="og:title" content="DQX耐性装備シミュレーター">
+  <meta property="og:description" content="ドラクエ10の耐性装備をシミュレーション！オリジナルの組み合わせをシェアしよう。">
+  <script src="https://cdn.jsdelivr.net/npm/handsontable@13.1.0/dist/handsontable.full.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/handsontable@13.1.0/dist/handsontable.full.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js"></script>
+  <style>
+    .handsontable th {
+      background-color: #E6F0FA; /* ヘッダー背景 */
+    }
+    .handsontable .htAutocompleteArrow {
+      display: none; /* インジケーターを非表示 */
+    }
+  </style>
+</head>
+<body>
+  <h1>DQX耐性装備シミュレーター</h1>
+  <div id="table"></div>
+  <button onclick="updateURL()" style="margin-top: 20px;">共有用URLを生成</button>
+  <button onclick="copyURL()" style="margin-top: 20px; margin-left: 10px;">URLをコピー</button>
+  <button onclick="clearTable()" style="margin-top: 20px; margin-left: 10px;">ページをクリア</button>
+  <p id="url-container" style="display: none;">URL: <a id="current-url" href="" target="_blank"></a></p>
+  <footer style="margin-top: 100px; text-align: left; font-size: 14px;">
+    <p>本ツールは「ドラゴンクエストX オンライン」（株式会社スクウェア・エニックスが開発・運営）に関連する非公式なファンツールです。<br>本ツールで使用している「ドラゴンクエストX オンライン」ゲーム内の用語や名称は株式会社スクウェア・エニックスが保有する著作権および商標権に帰属します。<br>© ARMOR PROJECT/BIRD STUDIO/SQUARE ENIX All Rights Reserved.</p>
+    <p>本ツールに関するお問い合わせは<span id="email"></span>までご連絡ください。<br>© 2025 DQX耐性装備シミュレーター</p>
+  </footer>
+  <script>
+    // オートコンプリートの値セット
+    const autocompleteSources = {
+      '武器': ['','40','60','62','64','66','68','70','100'],
+      '盾': ['','12','14','18','20','21','22','23','24','28','30','32','34','36','37','38','39','40','41','42','46','50','54','60','62','64','66','68','70','90','92','94','96','98','100'],
+      '頭': ['','40','60','62','64','66','68','70','90','92','94','96','98','100'],
+      '体上': ['','14','18','21','22','23','24','28','30','32','34','36','37','38','39','40','41','42','46','50','60','62','64','66','68','70','100'],
+      '体下': ['','40','60','62','64','66','68','70','100'],
+      '足': ['','90','92','94','96','98','100'],
+      '顔': ['','70','80','90','100'],
+      '首': ['','100'],
+      '指': ['','30','60','80','90'],
+      '腰': ['','2','4','6','8','10','12','14'],
+      '他': ['','29','32'],
+      '宝珠': ['','1','2','3','4','5','6','8','10','12'],
+      '特１': ['','5','10','15','20','25','30','35','40','45','50','55','60','65','70','75','80','85','90','95','100'],
+      '特２': ['','5','10','15','20','25','30','35','40','45','50','55','60','65','70','75','80','85','90','95','100'],
+      '特３': ['','5','10','15','20','25','30','35','40','45','50','55','60','65','70','75','80','85','90','95','100']
+    };
+
+    // グレーアウト対象セル（腕列を削除し、インデックスを調整）
+    const grayedOutCells = new Set([
+'0,1',	'0,2',		'0,4',		'0,6',	'0,7',	'0,8',			'0,11',
+'1,1',			'1,4',		'1,6',	'1,7',	'1,8',			'1,11',
+'2,1',	'2,2',		'2,4',		'2,6',	'2,7',	'2,8',			'2,11',
+'3,1',	'3,2',			'3,5',	'3,6',	'3,7',	'3,8',			'3,11',
+'4,1',			'4,4',		'4,6',	'4,7',	'4,8',			'4,11',
+'5,1',	'5,2',		'5,4',		'5,6',		'5,8',			'5,11',
+'6,1',			'6,4',	'6,5',	'6,6',	'6,7',	'6,8',	'6,9',		'6,11',
+'7,1',			'7,4',		'7,6',		'7,8',			'7,11',
+	'8,2',	'8,3',	'8,4',	'8,5',	'8,6',	'8,7',	'8,8',	'8,9',		'8,11',
+'9,1',	'9,2',	'9,3',	'9,4',	'9,5',	'9,6',		'9,8',	'9,9',		'9,11',
+'10,1',		'10,3',		'10,5',	'10,6',	'10,7',	'10,8',			'10,11',
+'11,1',		'11,3',	'11,4',	'11,5',		'11,7',	'11,8',	'11,9',		'11,11',
+'12,1',		'12,3',	'12,4',	'12,5',	'12,6',	'12,7',	'12,8',	'12,9',		'12,11',
+'13,1',		'13,3',	'13,4',	'13,5',		'13,7',	'13,8',	'13,9',		'13,11',
+'14,1',	'14,2',	'14,3',	'14,4',	'14,5',	'14,6',	'14,7',		'14,9',		'14,11',
+'15,1',		'15,3',		'15,5',	'15,6',	'15,7',	'15,8',	'15,9',	'15,10',	'15,11',
+'16,1',		'16,3',		'16,5',	'16,6',	'16,7',	'16,8',	'16,9',	'16,10',	'16,11',
+'17,1',		'17,3',		'17,5',	'17,6',	'17,7',	'17,8',	'17,9',	'17,10',	
+'18,1',		'18,3',		'18,5',	'18,6',	'18,7',	'18,8',	'18,9',	'18,10',	
+'19,1',		'19,3',		'19,5',	'19,6',	'19,7',	'19,8',	'19,9',	'19,10',	
+'20,1',		'20,3',		'20,5',	'20,6',	'20,7',	'20,8',	'20,9',	'20,10',	
+'21,1',		'21,3',		'21,5',	'21,6',	'21,7',	'21,8',	'21,9',	'21,10',	
+'22,1',		'22,3',		'22,5',	'22,6',	'22,7',	'22,8',	'22,9',	'22,10',	
+'23,1',		'23,3',		'23,5',	'23,6',	'23,7',	'23,8',	'23,9',	'23,10'
+    ]);
+
+    // 列ヘッダー（腕を削除）
+    const colHeaders = [
+      '<span style="color: red;">合計</span>',
+      '武器', '盾', '頭', '体上', '体下', '足',
+      '顔', '首', '指', '腰', '他', '宝珠', '特１', '特２', '特３'
+    ];
+
+    // 行ヘッダー
+    const rowHeaders = [
+      '眠り', '混乱', 'マヒ', '即死', '封印', '幻惑', 'おびえ', 'どく',
+      'MP吸収', '魅了', '呪い', '転び', 'しばり', '踊らされ', '弱体',
+      '呪文減', 'ブレス減', '炎減', '氷減', '風減', '雷減', '土減', '闇減', '光減'
+    ];
+
+    // 初期データ（24行16列）
+    const defaultData = Array(24).fill().map(() => Array(16).fill(''));
+
+    // URLパラメータからデータ取得
+    let initialData = defaultData;
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('data')) {
+      try {
+        const loadedData = JSON.parse(LZString.decompressFromEncodedURIComponent(urlParams.get('data')));
+        if (typeof loadedData === 'object') {
+          // オブジェクト形式のデータ
+          initialData = defaultData.map((row, rowIndex) => {
+            const rowName = rowHeaders[rowIndex];
+            const rowData = loadedData[rowName] || {};
+            return colHeaders.map((colName, colIndex) => {
+              // 列名が一致する場合のみ値を反映
+              return rowData[colName] || '';
+            });
+          });
+        } else {
+          throw new Error('Invalid data format');
+        }
+      } catch (e) {
+        console.error('Invalid data in URL', e);
+        alert('URLのデータが無効です。新しいテーブルを初期化します。');
+      }
+    }
+
+    // Handsontable設定：24行16列、全列（合計以外）はautocomplete
+    const hot = new Handsontable(document.getElementById('table'), {
+      data: initialData,
+      colHeaders: colHeaders,
+      rowHeaders: rowHeaders,
+      // 列設定：合計列以外はautocomplete
+      columns: Array(16).fill().map((_, i) => ({
+        data: i,
+        type: i === 0 ? 'numeric' : 'autocomplete',
+        source: i === 0 ? undefined : autocompleteSources[colHeaders[i]],
+        filter: i === 0 ? undefined : false,
+        strict: i === 0 ? undefined : false,
+        readOnly: i === 0,
+        width: 40,
+        className: 'htCenter'
+      })),
+      // セル設定：背景色、合計列の赤文字、グレーアウト
+      cells: function(row, col) {
+        const cellProperties = {};
+        const isGrayedOut = col !== 0 && grayedOutCells.has(`${row},${col}`);
+        cellProperties.readOnly = col === 0 || isGrayedOut;
+        cellProperties.renderer = function(instance, td, row, col, prop, value) {
+          Handsontable.renderers.AutocompleteRenderer.apply(this, arguments);
+          if (col === 0) {
+            td.style.backgroundColor = '#FFF9C4';
+          } else if (isGrayedOut) {
+            td.style.backgroundColor = '#D3D3D3';
+          } else {
+            td.style.backgroundColor = (row % 2 === 0) ? '#FFFFFF' : '#F5F5F5';
+          }
+          if (col === 0 && value >= 100) {
+            td.style.color = 'red';
+          }
+        };
+        return cellProperties;
+      },
+      minRows: 24,
+      minCols: 16,
+      rowHeaderWidth: 66,
+      licenseKey: 'non-commercial-and-evaluation',
+      // 変更後：合計を計算
+      afterChange: (changes) => {
+        if (changes) {
+          changes.forEach(([row, col]) => {
+            if (col >= 1 && col <= 15) {
+              const rowData = hot.getDataAtRow(row).slice(1, 16);
+              const allEmpty = rowData.every(val => val === '' || val === null);
+              if (allEmpty) {
+                hot.setDataAtCell(row, 0, '');
+              } else {
+                const sum = rowData.reduce((acc, val) => {
+                  const num = parseInt(val);
+                  return acc + (isNaN(num) ? 0 : num);
+                }, 0);
+                hot.setDataAtCell(row, 0, sum);
+              }
+            }
+          });
+        }
+      }
+    });
+
+    // URL生成
+    function updateURL() {
+      // テーブルデータをオブジェクト形式に変換
+      const tableData = {};
+      rowHeaders.forEach((rowName, rowIndex) => {
+        tableData[rowName] = {};
+        const rowData = hot.getDataAtRow(rowIndex);
+        colHeaders.forEach((colName, colIndex) => {
+          // 合計列または入力されたセル（グレーアウト以外）を保存
+          if ((colIndex === 0 || rowData[colIndex] !== '') && !grayedOutCells.has(`${rowIndex},${colIndex}`)) {
+            tableData[rowName][colName] = rowData[colIndex];
+          }
+        });
+      });
+
+      // データを圧縮してURL生成
+      const data = JSON.stringify(tableData);
+      const compressed = LZString.compressToEncodedURIComponent(data);
+      if (compressed.length > 1500) {
+        alert('データが大きすぎます。一部をクリアしてください。');
+        return;
+      }
+      const newURL = `${window.location.origin}${window.location.pathname}?data=${compressed}`;
+      document.getElementById('current-url').href = newURL;
+      document.getElementById('current-url').textContent = newURL;
+      document.getElementById('url-container').style.display = 'block';
+      try {
+        window.history.pushState({}, '', newURL);
+      } catch (e) {
+        console.error('URL更新に失敗', e);
+      }
+    }
+
+    // URLコピー
+    function copyURL() {
+      const url = document.getElementById('current-url').href;
+      navigator.clipboard.writeText(url).catch((err) => {
+        console.error('コピーに失敗しました', err);
+      });
+    }
+
+    // テーブルクリア
+    function clearTable() {
+      window.location = window.location.pathname;
+    }
+
+    // メールアドレスを動的に生成
+    const user = "sfdev53";
+    const domain = "gmail.com";
+    const emailElement = document.getElementById("email");
+    emailElement.innerHTML = `<a href="mailto:${user}@${domain}">${user}@${domain}</a>`;
+
+  </script>
+</body>
+</html>
