@@ -16,6 +16,9 @@
     .handsontable .htAutocompleteArrow {
       display: none;
     }
+    #current-url {
+      word-break: break-all;
+    }
   </style>
 </head>
 <body>
@@ -99,7 +102,8 @@
             const rowName = rowHeaders[rowIndex];
             const rowData = loadedData[rowName] || {};
             return colHeaders.map((colName, colIndex) => {
-              return rowData[colName] || '';
+              const value = rowData[colName];
+              return value != null ? value.toString() : '';
             });
           });
         } else {
@@ -172,13 +176,21 @@
     function updateURL() {
       const tableData = {};
       rowHeaders.forEach((rowName, rowIndex) => {
-        tableData[rowName] = {};
         const rowData = hot.getDataAtRow(rowIndex);
         colHeaders.forEach((colName, colIndex) => {
-          if ((colIndex === 0 || rowData[colIndex] !== '') && !grayedOutCells.has(`${rowIndex},${colIndex}`)) {
-            tableData[rowName][colName] = rowData[colIndex];
+          const value = parseInt(rowData[colIndex]);
+          if (!isNaN(value) && value !== 0) { // 0や空は除外
+            if (!tableData[rowName]) tableData[rowName] = {};
+            tableData[rowName][colName] = value;
           }
         });
+      });
+
+      // 空の行を削除
+      Object.keys(tableData).forEach(rowName => {
+        if (Object.keys(tableData[rowName]).length === 0) {
+          delete tableData[rowName];
+        }
       });
 
       const data = JSON.stringify(tableData);
