@@ -12,6 +12,7 @@
   <style>
     .handsontable th {
       background-color: #E6F0FA;
+      position: static !important;
     }
     .handsontable .htAutocompleteArrow {
       display: none;
@@ -115,8 +116,6 @@
       data: initialData,
       colHeaders: colHeaders,
       rowHeaders: rowHeaders,
-      fixedRowsTop: 0,
-      fixedColumnsLeft: 0,
       columns: Array(16).fill().map((_, i) => ({
         data: i,
         type: i === 0 ? 'numeric' : 'autocomplete',
