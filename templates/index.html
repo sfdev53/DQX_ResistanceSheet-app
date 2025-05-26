@@ -179,14 +179,13 @@
         const rowData = hot.getDataAtRow(rowIndex);
         colHeaders.forEach((colName, colIndex) => {
           const value = parseInt(rowData[colIndex]);
-          if (!isNaN(value) && value !== 0) { // 0や空は除外
+          if (!isNaN(value) && value !== 0) {
             if (!tableData[rowName]) tableData[rowName] = {};
             tableData[rowName][colName] = value;
           }
         });
       });
 
-      // 空の行を削除
       Object.keys(tableData).forEach(rowName => {
         if (Object.keys(tableData[rowName]).length === 0) {
           delete tableData[rowName];
