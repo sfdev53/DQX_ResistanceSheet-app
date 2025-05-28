@@ -25,9 +25,16 @@
 <body>
   <h1>DQX耐性装備シミュレーター</h1>
   <div id="table"></div>
-  <button onclick="updateURL()" style="margin-top: 20px;">共有用URLを生成or更新</button>
-  <button onclick="copyURL()" style="margin-top: 20px; margin-left: 10px;">URLをコピー</button>
-  <button onclick="clearTable()" style="margin-top: 20px; margin-left: 10px;">ページをクリア</button>
+  <button onclick="clearTable()">クリア</button><br>
+  <div><br>組み合わせ例の呼び出し</div>
+  <button onclick="loadTemplate(1)">15耐性（アンテイク＋プシューケー）</button><br>
+  <button onclick="loadTemplate(2)">13耐性（幻惑、MP吸収以外）（ミニュアデス）余りブレス</button><br>
+  <button onclick="loadTemplate(3)">13耐性（どく、MP吸収以外）（ミニュアデス）余りブレス</button><br>
+  <button onclick="loadTemplate(4)">13耐性（幻惑、MP吸収以外）（プシューケー）</button><br>
+  <button onclick="loadTemplate(5)">ブレス100+呪い+カスタム</button><br>
+  <div><br>共有用URL</div>
+  <button onclick="updateURL()">生成or更新</button>
+  <button onclick="copyURL()">コピー</button>
   <p id="url-container" style="display: none;">URL: <a id="current-url" href="" target="_blank"></a></p>
   <footer style="margin-top: 100px; text-align: left; font-size: 14px;">
     <p>本ツールは「ドラゴンクエストX オンライン」（株式会社スクウェア・エニックスが開発・運営）の状態異常耐性装備をシミュレーションする非公式ツールです。<br>本ツールで使用している「ドラゴンクエストX オンライン」ゲーム内の用語や名称は株式会社スクウェア・エニックスが保有する著作権および商標権に帰属します。<br>© ARMOR PROJECT/BIRD STUDIO/SQUARE ENIX All Rights Reserved.</p>
@@ -38,7 +45,7 @@
       '武器': ['','40','60','70','100'],
       '盾': ['','12','14','20','21','24','28','36','40','42','50','54','60','70','90','100'],
       '頭': ['','40','60','70','90','100'],
-      '体上': ['','14','21','24','28','36','40','42','50','60','70','100'],
+      '体上': ['','7','14','21','24','28','36','40','42','50','60','70','100'],
       '体下': ['','40','60','70','100'],
       '足': ['','90','100'],
       '顔': ['','70','80','90','100'],
@@ -61,7 +68,7 @@
       '5,1','5,2','5,4','5,6','5,8','5,11',
       '6,1','6,4','6,5','6,6','6,7','6,8','6,9','6,11',
       '7,1','7,4','7,6','7,8','7,11',
-      '8,2','8,3','8,4','8,5','8,6','8,7','8,9','8,11',
+      '8,2','8,3','8,4','8,6','8,7','8,9','8,11',
       '9,1','9,2','9,3','9,4','9,5','9,6','9,8','9,9','9,11',
       '10,1','10,3','10,5','10,6','10,7','10,8','10,11',
       '11,1','11,3','11,4','11,5','11,7','11,8','11,9','11,11',
@@ -217,6 +224,22 @@
       } catch (e) {
         console.error('URLリダイレクトに失敗', e);
         sessionStorage.removeItem('showURL');
+      }
+    }
+
+    function loadTemplate(templateId) {
+      const templateURLs = {
+        1: `${window.location.origin}${window.location.pathname}?data=N4IkBO6FEMIFygPAZwA4EMB2ACBAXAngGwFMBeAHRAGMB7fKgJ2gzsIBMBucgPkAgVQCCi4A9MnScYARgAMEgDQhAtBkwAbDJCBwYxgBmFYFztQAfO4iQF9Zgd9tAjnIx4wzDgIly1WgyasOIHvyGo0o6JJWAyvKA0HJKOvp+KoCeToCI-5pGsoB7DIBLDJYgiN5YeERklDT0jMzsXHyC1r7+sgrQyrLq0FqyegbGIIDOyoDe1qnp6Jl2OY75LkXuJV4iBoGAUHITLYCAOoAOyl3WvdkOec6Fbh6l3uVSssGhjeGSsjFxLYDeeoCLBksZtqu5TgWuxZ5lEwch1Sp1DSBNCItQBSDIBnBkAEgx3HoPexPQabN47cYRFSAP7cYABOMLNWSASwZAPIMUJsWVhAw2rxG712nxA6OgACYVFUAOzYoGyACyAAVABwqgDnlIkrUnrF7DbZjHw0wBm1oALNRmskAotmAMLlBTD+iKhltRh8UbJACoZMAAHCpAA6BBmOOJAgCsVQAiDKqSernprERK9mijiAAtNoAAWeIgQBHcaD7X01k6EZSkZLdSBAM2x8pAgHUGQAODFBYGllmqw-CKeKdRVaZi2ZIWoAoOMAkQyAVQZADEMIceZNFWqpyIL8ZRLUAjPoBOvC8O57XUmOANMyE1bAOGmgGw7HuOnNigfIxQW6otQBrDIAbhkAnQxT9PdYmhuHkufN6OLgHhRSGQxAA`,
+        2: `${window.location.origin}${window.location.pathname}?data=N4IkBO6FEMIFygPAZwA4EMB2ACBAXAngGwFMBeAHRAGMB7fKgJ2gzsIBMBucgPkAgVQCCi4A9MnScYARgAMEgDQhAtBkwAbDJCBleUDQcjAAsEgL6zA77aBHORjxhmHARLlqtBk1YcQPfkNRpR0SSsB-bjABMKhowAOwqgLnagAfO4nqygHsMgEsMpiCI7lh4RGSUNPSMzOxcfILmnt6yCtDKsoDgxjAAzBHRXrEggM7KgN7Wyano6VZZtrkOBc5FbiIxQYBQchP6IICAOoAOyl3mvZk2Ofb5Ti7F7qVSsn7QgbLB0GGyUTGzgFIMgM4MgBIMy2mWa9l2eY6FriUThzAATka11kgEsGQDyDM8eq9rO9Bltvrtxs0VBUqiBatAGpcmpJZoBRbMAYXJQiwZWEDTZfEY-PZ-ECAFQyYAAOFSAB0CYjiQSBAFYqgBEGEmrckbT7DHZjDx0o7ozHYkBXZqzQBHcXcBTD+sKhttRr8UbJAM2xM1kgHUGQAODFBYCkVmr1h9NYjxftfIDgQrZIAoOMAkQyAVQZADEMqrJ6ttCOpSIlupABpRs0AjPqqf19G3wqlinVlECANMzDTzAOGmgGw7eNvCkirU05GKTmVWaANYZADcMgE6GfMW7qkhNwymi7W045TcRaCuKXS6IA`,
+        3: `${window.location.origin}${window.location.pathname}?data=N4IkBO6FEMIFygPAZwA4EMB2ACBAXAngGwFMBeAHRAGMB7fKgJ2gzsIBMBucgPkAgVQCCi4A9MnScYARgAMEgDQhAtBkwAbDJCBleUDQcjAAsEgL6zA77aBHORjxhmHARLlqtBk1YcQPfkNRpR0SSsB-bjABMKhowAOwqgLnagAfO4nqygHsMgEsMpiCI7lh4RGSUNPSMzOxcfILmnt6yCtDKsoDgxjAAzBHRXrEggM7KgN7Wyano6VZZtrkOBc5FbiIxQYBQchP6IICAOoAOyl3mvZk2Ofb5Ti7F7qVSsn7QgbLB0GGyUTGzgN56gIsGy2mWa9l2eY6FriUT5UoqtdAGpcmpJZoApBkAzgyACQZHj1ntZXoMtp9duNmr4YABORrXWSAUWzAGFysIsGQRA02HxGXz2PxAgBUMmAADhUgAdAmLA3EgQBWKoARBmJqzJG3ewx2Yw8tKOVRAAKBICuzVmgCO4iH8+H9IVDbajb7o2SAZtiZrJAOoMgAcGKCwFIrNXrN6alFi-YY6DYjkK2SAKDjAJEMgFUGQAxDKrSerbciqajxbqQAb0bNAIz6qgDfRtSMpop1ZRAgDTMw3cwDhpoBsOwTL3Jwq11LRildilmgDWGQA3DIBOhgLFu6JMTiIpIu1NOOU3EWkrul0QA`,
+        4: `${window.location.origin}${window.location.pathname}?data=N4IkBO6FEMIFygPAZwA4EMB2ACBAXAngGwFMBeAHRAGMB7fKgJ2gzsIBMBucgPkAgVQCCi4A9MnScYARgAMEgDQhAtBkwAbDJCBleUDQcjAAsEgL6zA77aBHORjxhmHARLlqtBk1YcQPfkNRpR0SSo1KVgcGMYAGYVQFztQAPncT1ZQD2GQCWGUxBEdyw8IjJKGnpGZnYuPkFzT29ZBWhlWUDoENkIqP0QQGdlQG9rROT0VKsM22yHPOcCtxEon0AoORGGwEAdQAdlNvNO9Jss+1ynF0L3YqlZX3KA4LDIr2iQQCkGQGcGQAkGOZTLRcy7HMd81yKR2UA-txgATkP62UAlgyAeQYbh07tYHr1Vi8NsNjiovtAAEwqMoAdj+xwagFFswBhcqCLGkIT0Vs8Bq9Nu8QIAVDJgAA4VIAHQKitSOkgagCsVQAiDASFsTlk9+ushh4qYiKmpxtAdA1AEdx5154O6Ar6a0Gb3hskAzbETWSAdQZAA4MUFgSXmSqWj1VMJFWwRP0x7NkgCg4wCRDIBVBkAMQyKonKy3Q8mw0WakA6+ENQCM+qpvV0LVCycKNSUQIA0zN1IA5gHDTQDYdtH7iTBWqKXDFKylA1AGsMgBuGQCdDDmTe1CTHIaSherKeVS+VdLogA`,
+        5: `${window.location.origin}${window.location.pathname}?data=N4IkViqCIMIFygPAZwA4EMB2ACBAXAngGwFMBeAHRAGMB7fKgJ2gzsIBMBucgPkAgVQCCi4A9MnScYARgAMEgDQhA4MYwAnDJCBc7UAHzuIkBfWYCO4wM4MMeMMw4CJctVoMmrDiB78hqNKOiSVgZtitO2YCg4wEiGQFUGQBiGYxBEVyw8IjJKGnpGZnYuPkFTd09ZHw8pXRBARn1AZXkIqPQYi3jrJLtUx3SXEV9ZQDTM3wKwQHDTQGw7MtNKuKtE2xSHJwzXdwA2WQ0YaYLANYZAG4ZAToY+2EiB8yGEm2T7NOdMlpBAP7cYAFYAFlliwCg5GBuVeehF7SA`
+      };
+      const newURL = templateURLs[templateId];
+      try {
+        window.location.assign(newURL); // リダイレクト（URL表示なし）
+      } catch (e) {
+        console.error('テンプレート読み込みに失敗', e);
       }
     }
 
