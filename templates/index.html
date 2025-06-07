@@ -14,7 +14,7 @@
 
   <title>DQX耐性装備シミュレーター</title>
   <meta name="description" content="ドラクエ10の耐性装備をシミュレーション！お気に入りの組み合わせをURLでシェア可能">
-  <meta name="keywords" content="ドラクエ10, DQX, 状態異常耐性, 11耐性, 12耐性, 13耐性, ブレス100, 呪文60">
+  <meta name="keywords" content="ドラクエ10, DQX, 状態異常, 13耐性, 14耐性, 15耐性, ブレス100, 呪文60">
   <meta property="og:title" content="DQX耐性装備シミュレーター">
   <meta property="og:description" content="ドラクエ10の耐性装備をシミュレーション！お気に入りの組み合わせをURLでシェア可能">
   <script src="https://cdn.jsdelivr.net/npm/handsontable@13.1.0/dist/handsontable.full.min.js"></script>
@@ -35,6 +35,9 @@
 </head>
 <body>
   <h1>DQX耐性装備シミュレーター</h1>
+  <p>本ツールは「ドラゴンクエストX オンライン」（株式会社スクウェア・エニックスが開発・運営）の状態異常耐性装備の組み合わせをシミュレーションする非公式ツールです。<br><br>
+  各セルをダブルクリック（タップ）で候補値を選択、または半角数字で手動入力<br>
+  </p>
   <div id="table"></div>
   <button onclick="clearTable()">クリア</button><br>
   <div><br>組み合わせ例の呼び出し</div>
@@ -44,11 +47,11 @@
   <button onclick="loadTemplate(4)">13耐性（幻惑、MP吸収以外）（プシューケー）</button><br>
   <button onclick="loadTemplate(5)">ブレス100+呪い+カスタム</button><br>
   <div><br>共有用URL</div>
-  <button onclick="updateURL()">URL生成or更新</button>
-  <button onclick="copyURL()">コピー</button>
+  <button onclick="updateURL()">URLを生成、または更新</button>
+  <button onclick="copyURL()">URLをコピー</button>
   <p id="url-container" style="display: none;">URL: <a id="current-url" href="" target="_blank"></a></p>
   <footer style="margin-top: 100px; text-align: left; font-size: 14px;">
-    <p>本ツールは「ドラゴンクエストX オンライン」（株式会社スクウェア・エニックスが開発・運営）の状態異常耐性装備をシミュレーションする非公式ツールです。<br>本ツールで使用している「ドラゴンクエストX オンライン」ゲーム内の用語や名称は株式会社スクウェア・エニックスが保有する著作権および商標権に帰属します。<br>© ARMOR PROJECT/BIRD STUDIO/SQUARE ENIX All Rights Reserved.</p>
+    <p>本ツールで使用している「ドラゴンクエストX オンライン」ゲーム内の用語や名称は株式会社スクウェア・エニックスが保有する著作権および商標権に帰属します。<br>© ARMOR PROJECT/BIRD STUDIO/SQUARE ENIX All Rights Reserved.</p>
     <p>本ツールに関するお問い合わせは<span id="email"></span>までご連絡ください。<br>© 2025 DQX耐性装備シミュレーター</p>
   </footer>
   <script>
