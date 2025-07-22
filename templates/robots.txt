@@ -1,3 +1,0 @@
-User-agent: *
-Allow: /
-Sitemap: https://dqx-resist.vercel.app/sitemap.xml
